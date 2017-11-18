@@ -452,7 +452,8 @@ public class CameraView extends FrameLayout {
                     @Override
                     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
                                             float distanceY) {
-                        return mMocaOnScrollListener.onScroll(e1, e2, distanceX, distanceY);
+                        return mMocaOnScrollListener != null && mMocaOnScrollListener.onScroll
+                                (e1, e2, distanceX, distanceY);
                     }
                 });
             }
@@ -468,22 +469,17 @@ public class CameraView extends FrameLayout {
                     @Override
                     public boolean onScale(ScaleGestureDetector detector) {
                         float factor = detector.getScaleFactor();
-//                        if ((factor > 1f && factor < 1.05f) || (factor < 1f && factor > 0.95f)) {
-//                            return false;
-//                        }
                         setZoom(getZoom() * factor);
                         return true;
                     }
 
                     @Override
                     public boolean onScaleBegin(ScaleGestureDetector detector) {
-                        Log.d(TAG, String.valueOf("begin"));
                         return true;
                     }
 
                     @Override
                     public void onScaleEnd(ScaleGestureDetector detector) {
-                        Log.d(TAG, String.valueOf("end"));
 
                     }
                 });
