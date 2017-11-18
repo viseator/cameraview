@@ -39,7 +39,6 @@ public class PreviewOverlay extends View {
         if (mScaleGestureDetector != null) {
             mScaleGestureDetector.onTouchEvent(m);
         }
-        Log.d(TAG, String.valueOf(mScaleGestureDetector.isInProgress()));
         if (mGestureDetector != null && !mScaleGestureDetector.isInProgress()) {
             if (mGestureDetector != null) {
                 mGestureDetector.onTouchEvent(m);
