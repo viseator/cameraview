@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements
             actionBar.setDisplayShowTitleEnabled(false);
         }
         mCameraView.setManualFocus(true);
+        mCameraView.setPinchZoom(true);
     }
 
     @Override

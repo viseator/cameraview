@@ -29,8 +29,10 @@ import android.support.v4.os.ParcelableCompat;
 import android.support.v4.os.ParcelableCompatCreatorCallbacks;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -429,6 +431,35 @@ public class CameraView extends FrameLayout {
         }
     }
 
+    public void setPinchZoom(final boolean pinchZoom) {
+        if (pinchZoom) {
+            if (!mOverlay.hasScaleGestureDetector()) {
+                mOverlay.setScaleGestureListener(new ScaleGestureDetector.OnScaleGestureListener() {
+                    @Override
+                    public boolean onScale(ScaleGestureDetector detector) {
+                        float factor = detector.getScaleFactor();
+                        if ((factor > 1f && factor < 1.05f) || (factor < 1f && factor > 0.95f)) {
+                            return false;
+                        }
+                        setZoom(getZoom() * factor);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onScaleBegin(ScaleGestureDetector detector) {
+                        return true;
+                    }
+
+                    @Override
+                    public void onScaleEnd(ScaleGestureDetector detector) {
+
+                    }
+                });
+            }
+        } else {
+            mOverlay.setScaleGestureListener(null);
+        }
+    }
     /**
      * Sets the flash mode.
      *

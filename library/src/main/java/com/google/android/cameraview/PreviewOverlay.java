@@ -20,11 +20,13 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 
 public class PreviewOverlay extends View {
 
     private GestureDetector mGestureDetector = null;
+    private ScaleGestureDetector mScaleGestureDetector = null;
 
     public PreviewOverlay(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -34,6 +36,9 @@ public class PreviewOverlay extends View {
     public boolean onTouchEvent(MotionEvent m) {
         if (mGestureDetector != null) {
             mGestureDetector.onTouchEvent(m);
+        }
+        if (mScaleGestureDetector != null) {
+            mScaleGestureDetector.onTouchEvent(m);
         }
         return true;
     }
@@ -48,5 +53,18 @@ public class PreviewOverlay extends View {
 
     public boolean hasGestureDetector() {
         return mGestureDetector != null;
+    }
+
+    public void setScaleGestureListener(
+            ScaleGestureDetector.OnScaleGestureListener gestureListener) {
+        if (gestureListener != null) {
+            mScaleGestureDetector = new ScaleGestureDetector(getContext(), gestureListener);
+        } else {
+            mScaleGestureDetector = null;
+        }
+    }
+
+    public boolean hasScaleGestureDetector() {
+        return mScaleGestureDetector != null;
     }
 }
