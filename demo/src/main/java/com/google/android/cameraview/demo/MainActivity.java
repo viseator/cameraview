@@ -121,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
         }
+        mCameraView.setManualFocus(true);
     }
 
     @Override
