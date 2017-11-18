@@ -468,9 +468,9 @@ public class CameraView extends FrameLayout {
                     @Override
                     public boolean onScale(ScaleGestureDetector detector) {
                         float factor = detector.getScaleFactor();
-                        if ((factor > 1f && factor < 1.05f) || (factor < 1f && factor > 0.95f)) {
-                            return false;
-                        }
+//                        if ((factor > 1f && factor < 1.05f) || (factor < 1f && factor > 0.95f)) {
+//                            return false;
+//                        }
                         setZoom(getZoom() * factor);
                         return true;
                     }
