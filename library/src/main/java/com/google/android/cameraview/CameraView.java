@@ -43,34 +43,53 @@ import java.util.Set;
 
 public class CameraView extends FrameLayout {
 
-    /** The camera device faces the opposite direction as the device's screen. */
+    private static final String TAG = "@vir CameraView";
+    /**
+     * The camera device faces the opposite direction as the device's screen.
+     */
     public static final int FACING_BACK = Constants.FACING_BACK;
 
-    /** The camera device faces the same direction as the device's screen. */
+    /**
+     * The camera device faces the same direction as the device's screen.
+     */
     public static final int FACING_FRONT = Constants.FACING_FRONT;
 
-    /** Direction the camera faces relative to device screen. */
+    /**
+     * Direction the camera faces relative to device screen.
+     */
     @IntDef({FACING_BACK, FACING_FRONT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Facing {
     }
 
-    /** Flash will not be fired. */
+    /**
+     * Flash will not be fired.
+     */
     public static final int FLASH_OFF = Constants.FLASH_OFF;
 
-    /** Flash will always be fired during snapshot. */
+    /**
+     * Flash will always be fired during snapshot.
+     */
     public static final int FLASH_ON = Constants.FLASH_ON;
 
-    /** Constant emission of light during preview, auto-focus and snapshot. */
+    /**
+     * Constant emission of light during preview, auto-focus and snapshot.
+     */
     public static final int FLASH_TORCH = Constants.FLASH_TORCH;
 
-    /** Flash will be fired automatically when required. */
+    /**
+     * Flash will be fired automatically when required.
+     */
     public static final int FLASH_AUTO = Constants.FLASH_AUTO;
 
-    /** Flash will be fired in red-eye reduction mode. */
+    /**
+     * Flash will be fired in red-eye reduction mode.
+     */
     public static final int FLASH_RED_EYE = Constants.FLASH_RED_EYE;
 
-    /** The mode for for the camera device's flash control */
+    /**
+     * The mode for for the camera device's flash control
+     */
     @IntDef({FLASH_OFF, FLASH_ON, FLASH_TORCH, FLASH_AUTO, FLASH_RED_EYE})
     public @interface Flash {
     }
@@ -80,6 +99,9 @@ public class CameraView extends FrameLayout {
     PreviewOverlay mOverlay;
 
     private final CallbackBridge mCallbacks;
+
+
+    private MocaOnScrollListener mMocaOnScrollListener;
 
     private boolean mAdjustViewBounds;
 
@@ -113,8 +135,8 @@ public class CameraView extends FrameLayout {
         }
         mOverlay = createPreviewOverlay(context);
         // Attributes
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CameraView, defStyleAttr,
-                R.style.Widget_CameraView);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.CameraView,
+                defStyleAttr, R.style.Widget_CameraView);
         mAdjustViewBounds = a.getBoolean(R.styleable.CameraView_android_adjustViewBounds, false);
         setFacing(a.getInt(R.styleable.CameraView_facing, FACING_BACK));
         String aspectRatio = a.getString(R.styleable.CameraView_aspectRatio);
@@ -129,10 +151,10 @@ public class CameraView extends FrameLayout {
         if (zoomString != null) {
             try {
                 setZoom(Float.valueOf(zoomString));
-            }catch(NumberFormatException e){
+            } catch (NumberFormatException e) {
                 setZoom(1.f);
             }
-        }else{
+        } else {
             setZoom(1.f);
         }
 
@@ -200,8 +222,8 @@ public class CameraView extends FrameLayout {
                 if (heightMode == MeasureSpec.AT_MOST) {
                     height = Math.min(height, MeasureSpec.getSize(heightMeasureSpec));
                 }
-                super.onMeasure(widthMeasureSpec,
-                        MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+                super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(height, MeasureSpec
+                        .EXACTLY));
             } else if (widthMode != MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY) {
                 final AspectRatio ratio = getAspectRatio();
                 assert ratio != null;
@@ -226,15 +248,13 @@ public class CameraView extends FrameLayout {
         }
         assert ratio != null;
         if (height < width * ratio.getY() / ratio.getX()) {
-            mImpl.getView().measure(
-                    MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
-                    MeasureSpec.makeMeasureSpec(width * ratio.getY() / ratio.getX(),
-                            MeasureSpec.EXACTLY));
+            mImpl.getView().measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(width * ratio.getY() / ratio.getX(), MeasureSpec
+                            .EXACTLY));
         } else {
-            mImpl.getView().measure(
-                    MeasureSpec.makeMeasureSpec(height * ratio.getX() / ratio.getY(),
-                            MeasureSpec.EXACTLY),
-                    MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+            mImpl.getView().measure(MeasureSpec.makeMeasureSpec(height * ratio.getX() / ratio
+                    .getY(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height,
+                    MeasureSpec.EXACTLY));
         }
     }
 
@@ -405,6 +425,10 @@ public class CameraView extends FrameLayout {
         return mImpl.getAutoFocus();
     }
 
+    public void setMocaOnScrollListener(MocaOnScrollListener mocaOnScrollListener) {
+        mMocaOnScrollListener = mocaOnScrollListener;
+    }
+
     /**
      * Enables or disables the manual focus mode. When the current camera doesn't support
      * manual focus, calling this method will have no effect.
@@ -423,6 +447,12 @@ public class CameraView extends FrameLayout {
                         }
                         mImpl.setFocusAt((int) e.getX(), (int) e.getY());
                         return true;
+                    }
+
+                    @Override
+                    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+                                            float distanceY) {
+                        return mMocaOnScrollListener.onScroll(e1, e2, distanceX, distanceY);
                     }
                 });
             }
@@ -447,11 +477,13 @@ public class CameraView extends FrameLayout {
 
                     @Override
                     public boolean onScaleBegin(ScaleGestureDetector detector) {
+                        Log.d(TAG, String.valueOf("begin"));
                         return true;
                     }
 
                     @Override
                     public void onScaleEnd(ScaleGestureDetector detector) {
+                        Log.d(TAG, String.valueOf("end"));
 
                     }
                 });
@@ -460,6 +492,7 @@ public class CameraView extends FrameLayout {
             mOverlay.setScaleGestureListener(null);
         }
     }
+
     /**
      * Sets the flash mode.
      *
@@ -596,8 +629,8 @@ public class CameraView extends FrameLayout {
             out.writeFloat(zoom);
         }
 
-        public static final Parcelable.Creator<SavedState> CREATOR
-                = ParcelableCompat.newCreator(new ParcelableCompatCreatorCallbacks<SavedState>() {
+        public static final Parcelable.Creator<SavedState> CREATOR = ParcelableCompat.newCreator
+                (new ParcelableCompatCreatorCallbacks<SavedState>() {
 
             @Override
             public SavedState createFromParcel(Parcel in, ClassLoader loader) {
@@ -655,3 +688,4 @@ public class CameraView extends FrameLayout {
     }
 
 }
+

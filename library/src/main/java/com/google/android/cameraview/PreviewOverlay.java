@@ -18,6 +18,7 @@ package com.google.android.cameraview;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -25,6 +26,7 @@ import android.view.View;
 
 public class PreviewOverlay extends View {
 
+    private static final String TAG = "@vir PreviewOverlay";
     private GestureDetector mGestureDetector = null;
     private ScaleGestureDetector mScaleGestureDetector = null;
 
@@ -34,11 +36,11 @@ public class PreviewOverlay extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent m) {
-        if (mGestureDetector != null) {
-            mGestureDetector.onTouchEvent(m);
-        }
         if (mScaleGestureDetector != null) {
             mScaleGestureDetector.onTouchEvent(m);
+        }
+        if (mGestureDetector != null && !mScaleGestureDetector.isInProgress()) {
+            mGestureDetector.onTouchEvent(m);
         }
         return true;
     }
@@ -55,8 +57,8 @@ public class PreviewOverlay extends View {
         return mGestureDetector != null;
     }
 
-    public void setScaleGestureListener(
-            ScaleGestureDetector.OnScaleGestureListener gestureListener) {
+    public void setScaleGestureListener(ScaleGestureDetector.OnScaleGestureListener
+                                                gestureListener) {
         if (gestureListener != null) {
             mScaleGestureDetector = new ScaleGestureDetector(getContext(), gestureListener);
         } else {
